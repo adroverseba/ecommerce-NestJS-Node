@@ -1,5 +1,16 @@
-import { Controller, Query, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Query,
+  Get,
+  Param,
+  Post,
+  Body,
+  Put,
+  Delete,
+  Res,
+} from '@nestjs/common';
 
+import { Response } from 'express';
 @Controller('products')
 export class ProductsController {
   @Get()
@@ -8,7 +19,9 @@ export class ProductsController {
     @Query('limit') limit = 5,
     @Query('brand') brand: string,
   ) {
-    return `products limit=${limit}, offset=${offset}, brand=${brand}`;
+    return {
+      message: `products limit=${limit}, offset=${offset}, brand=${brand}`,
+    };
   }
 
   @Get('filter') //esta ruta debe ir siempre arriba de las dinamicas
@@ -17,7 +30,28 @@ export class ProductsController {
   }
 
   @Get(':id')
-  getProduct(@Param('id') id: string): string {
-    return `product #${id}`;
+  getProduct(@Res() response: Response, @Param('id') id: string) {
+    response.status(200).send({ message: `product #${id}` });
+  }
+
+  @Post()
+  create(@Body() payload: any) {
+    return {
+      message: 'accion de crear',
+      payload,
+    };
+  }
+
+  @Put(':id')
+  update(@Body() payload: any, @Param('id') id: number) {
+    return {
+      id,
+      payload,
+    };
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return { id };
   }
 }
